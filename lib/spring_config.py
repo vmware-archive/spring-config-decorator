@@ -14,6 +14,7 @@ def detect():
 	service = find_spring_config_service(appinfo)
 	if service == None:
 		sys.exit(1)
+	print 'spring-config'
 
 # Get Application Info
 #

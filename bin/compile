@@ -7,8 +7,6 @@ BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
 
-echo BUILD_DIR $BUILD_DIR
-
 mkdir -p $BUILD_DIR/spring_config
 mkdir -p $BUILD_DIR/.profile.d
 cp $ROOT_DIR/lib/spring_config.py $BUILD_DIR/spring_config

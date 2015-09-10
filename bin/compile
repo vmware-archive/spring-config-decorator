@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir> <env-dir>
+
+BIN_DIR=$(cd $(dirname $0); pwd)
+ROOT_DIR=$(dirname $BIN_DIR)
+BUILD_DIR=$1
+CACHE_DIR=$2
+ENV_DIR=$3
+
+echo BUILD_DIR $BUILD_DIR
+
+mkdir -p $BUILD_DIR/spring_config
+mkdir -p $BUILD_DIR/.profile.d
+cp $ROOT_DIR/lib/spring_config.py $BUILD_DIR/spring_config
+cp $ROOT_DIR/lib/spring_config.sh $BUILD_DIR/.profile.d

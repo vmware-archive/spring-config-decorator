@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import urllib2
+import base64
 
 def main():
 	appinfo = get_application_info()
@@ -46,23 +47,42 @@ def find_spring_config_service(appinfo):
 		service_instances = vcap_services[service]
 		for instance in service_instances:
 			tags = instance.get('tags', []) + instance.get('credentials',{}).get('tags',[])
-			if 'spring-config-server' in tags:
+			if 'spring-cloud' in tags and 'configuration' in tags:
 				return instance
 		return None
+
+def get_access_token(credentials):
+	client_id = credentials.get('client_id','')
+	client_secret = credentials.get('client_secret','')
+	access_token_uri = credentials.get('access_token_uri')
+	if access_token_uri is None:
+		return None
+	req = urllib2.Request(access_token_uri)
+	req.add_header('Authorization', 'Basic ' + base64.b64encode(client_id + ":" + client_secret))
+	body = "grant_type=client_credentials"
+	response = json.load(urllib2.urlopen(req, data=body))
+	access_token = response.get('access_token')
+	token_type = response.get('token_type')
+	return token_type + " " + access_token
 
 def get_spring_cloud_config(service, appinfo):
 	print >> sys.stderr, "spring-cloud-config:"
 	json.dump(service, sys.stderr, indent=4)
 	print >> sys.stderr
-	url = service.get('credentials',{}).get('url')
-	if url == None:
-		print >> sys.stderr, "services of type spring-config-server must specify a url"
+	credentials = service.get('credentials', {})
+	access_token = get_access_token(credentials)
+	uri = credentials.get('uri')
+	if uri is None:
+		print >> sys.stderr, "services of type spring-config-server must specify a uri"
 		return
-	url += "/" + appinfo['name']
-	url += "/" + appinfo['profile']
+	uri += "/" + appinfo['name']
+	uri += "/" + appinfo['profile']
 	try:
-		print >> sys.stderr, "GET", url
-		config = json.load(urllib2.urlopen(url))
+		print >> sys.stderr, "GET", uri
+		req = urllib2.Request(uri)
+		if access_token is not None:
+			req.add_header('Authorization', access_token)
+		config = json.load(urllib2.urlopen(req))
 	except urllib2.URLError as err:
 		print >> sys.stderr, err
 		return

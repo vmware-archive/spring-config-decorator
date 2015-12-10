@@ -177,9 +177,8 @@ def save_config_properties(service, config):
 	#
 	# And update VCAP_CONFIG to reflect downloaded properties
 	#
-	vcap_config['properties'] = config
-	# add_environment_variable('VCAP_CONFIG', json.dumps(vcap_config))
-	add_environment_variable('VCAP_CONFIG', 'blah')
+	vcap_config['targets'] = targets
+	add_environment_variable('VCAP_CONFIG', json.dumps(vcap_config))
 
 def write_property_file(file, properties, format):
 	if format == 'json':

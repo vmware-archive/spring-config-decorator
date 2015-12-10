@@ -11,4 +11,4 @@
 while read key value
 do
 	export "$key"="$value"
-done <<< "`python app/spring_config/spring_config.py`"
+done <<< "`python ~/spring_config/spring_config.py`"

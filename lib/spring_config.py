@@ -106,7 +106,7 @@ def get_spring_cloud_config(service, appinfo):
 
 def save_config_properties(service, config):
 	#
-	# Targets are configurable trhough VCAP_CONFIG
+	# Targets are configurable through VCAPX_CONFIG
 	# Provided defaults direct properties to various places
 	# based on simple pattern matching.
 	#

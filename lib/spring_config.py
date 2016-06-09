@@ -46,7 +46,7 @@ def get_application_info():
 	return appinfo
 
 # Find bound configuration service
-# 
+#
 # We only read configuration from bound config services that
 # are appropriately tagged. And since, for user-provided services,
 # tags can only be set inside the credentials dict, not in the
@@ -60,7 +60,7 @@ def find_spring_config_service(appinfo):
 			tags = instance.get('tags', []) + instance.get('credentials',{}).get('tags',[])
 			if 'spring-cloud' in tags and 'configuration' in tags:
 				return instance
-		return None
+	return None
 
 def get_access_token(credentials):
 	client_id = credentials.get('client_id','')

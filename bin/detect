@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env bash
 # bin/detect <build-dir>
 
 # spring-config-decorator
@@ -18,4 +18,5 @@
 # limitations under the License.
 
 # We are a decorator, not a buildpack, so we always decline to build
+
 exit 1

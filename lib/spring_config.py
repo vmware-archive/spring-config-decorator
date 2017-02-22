@@ -20,9 +20,15 @@ import sys
 import json
 import urllib2
 import base64
+import ssl
+
+ctx = ssl.create_default_context()
 
 def main():
 	get_vcap_config()
+	if skip_ssl_validation:
+		ctx.check_hostname = False
+		ctx.verify_mode = ssl.CERT_NONE
 	appinfo = get_application_info()
 	service = find_spring_config_service(appinfo)
 	if service != None:
@@ -37,12 +43,15 @@ def detect():
 
 vcap_config = None
 log_level = 1
+skip_ssl_validation = False
 
 def get_vcap_config():
 	global vcap_config
 	global log_level
+	global skip_ssl_validation
 	vcap_config = json.loads(os.getenv('VCAPX_CONFIG', '{}'))
 	log_level = vcap_config.get('loglevel', 1)
+	skip_ssl_validation = vcap_config.get('skip_ssl_validation', False)
 
 # Get Application Info
 #
@@ -87,7 +96,7 @@ def get_access_token(credentials):
 	req = urllib2.Request(access_token_uri)
 	req.add_header('Authorization', 'Basic ' + base64.b64encode(client_id + ":" + client_secret))
 	body = "grant_type=client_credentials"
-	response = json.load(urllib2.urlopen(req, data=body))
+	response = json.load(urllib2.urlopen(req, data=body, context=ctx))
 	access_token = response.get('access_token')
 	token_type = response.get('token_type')
 	return token_type + " " + access_token
@@ -111,8 +120,9 @@ def get_spring_cloud_config(service, appinfo):
 		req = urllib2.Request(uri)
 		if access_token is not None:
 			req.add_header('Authorization', access_token)
-		config = json.load(urllib2.urlopen(req))
+		config = json.load(urllib2.urlopen(req, context=ctx))
 	except urllib2.URLError as err:
+		print >> sys.stderr, err.read()
 		print >> sys.stderr, err
 		return
 	if log_level > 1:

@@ -22,11 +22,14 @@ import urllib2
 import base64
 import ssl
 
-ctx = ssl.create_default_context()
+try:
+	ctx = ssl.create_default_context()
+except:
+	ctx = None
 
 def main():
 	get_vcap_config()
-	if skip_ssl_validation:
+	if skip_ssl_validation and ctx is not None:
 		ctx.check_hostname = False
 		ctx.verify_mode = ssl.CERT_NONE
 	appinfo = get_application_info()

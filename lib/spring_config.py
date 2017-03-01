@@ -22,8 +22,10 @@ import urllib2
 import base64
 import ssl
 
+urlargs = {}
 try:
 	ctx = ssl.create_default_context()
+	urlargs['context'] = ctx
 except:
 	ctx = None
 
@@ -99,7 +101,7 @@ def get_access_token(credentials):
 	req = urllib2.Request(access_token_uri)
 	req.add_header('Authorization', 'Basic ' + base64.b64encode(client_id + ":" + client_secret))
 	body = "grant_type=client_credentials"
-	response = json.load(urllib2.urlopen(req, data=body, context=ctx))
+	response = json.load(urllib2.urlopen(req, data=body, **urlargs))
 	access_token = response.get('access_token')
 	token_type = response.get('token_type')
 	return token_type + " " + access_token
@@ -123,7 +125,7 @@ def get_spring_cloud_config(service, appinfo):
 		req = urllib2.Request(uri)
 		if access_token is not None:
 			req.add_header('Authorization', access_token)
-		config = json.load(urllib2.urlopen(req, context=ctx))
+		config = json.load(urllib2.urlopen(req, **urlargs))
 	except urllib2.URLError as err:
 		print >> sys.stderr, err.read()
 		print >> sys.stderr, err

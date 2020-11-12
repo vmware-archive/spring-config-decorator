@@ -1,3 +1,5 @@
+# spring-config-decorator is no longer actively maintained by VMware.
+
 # Spring Config Decorator
 
 > <b>NOTE: Meta-buildback is being deprecated</b><br/>
